@@ -1,5 +1,10 @@
 # 個人用メモ（コミットしない）
 docs/_notes/
 
+# 環境変数（.env.example はコミットする）
+.env
+.env.*
+!.env.example
+
 # OS
 .DS_Store
