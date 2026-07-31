@@ -4,14 +4,15 @@
 
 ### 1) users（ユーザー）
 
-| カラム     | 型          | 説明                            |
-| ---------- | ----------- | ------------------------------- |
-| id (PK)    | uuid        | ユーザーID                      |
-| email      | text        | メールアドレス                  |
-| name       | text        | 表示名（nullable）              |
-| image      | text        | プロフィール画像URL（nullable） |
-| created_at | timestamptz | 作成日時                        |
-| updated_at | timestamptz | 更新日時                        |
+| カラム         | 型        | 説明                            |
+| -------------- | --------- | ------------------------------- |
+| id (PK)        | text      | ユーザーID                      |
+| name           | text      | 表示名                          |
+| email          | text      | メールアドレス                  |
+| email_verified | boolean   | メール確認済みフラグ            |
+| image          | text      | プロフィール画像URL（nullable） |
+| created_at     | timestamp | 作成日時                        |
+| updated_at     | timestamp | 更新日時                        |
 
 ### 制約
 
@@ -19,11 +20,18 @@
 
 ### 補足
 
-- 本システムでは認証に Auth.js を採用する
+- 本システムでは認証に **better-auth** を採用する
 - 認証方式は Googleログイン / ログアウト / 初回登録（OAuth2）とする
 - 初回ログイン時に、Googleアカウント情報をもとにユーザーを自動登録する
 - OAuth前提のため `password` は保持しない
-- 認証関連の補助テーブルは Auth.js の構成に従う
+- **この表は better-auth が生成するスキーマに従う。手で定義しない**
+  - 生成コマンド: `npx @better-auth/cli generate --config src/external/client/auth/auth.ts --output src/external/client/database/auth-schema.ts`
+  - 補助テーブルとして `sessions` / `accounts` / `verifications` が同時に生成される
+- **他テーブルと型が異なる点に注意**
+  - `id` は `uuid` ではなく `text`（better-auth が独自にID生成するため）。
+    よって `stores` などの `user_id` も `text` にする
+  - 日時は `timestamptz` ではなく `timestamp`（生成物の仕様）。
+    ドメイン3テーブルは `timestamptz` のままとする
 
 ---
 
@@ -32,7 +40,7 @@
 | カラム                | 型          | 説明         |
 | --------------------- | ----------- | ------------ |
 | id (PK)               | uuid        | スーパーID   |
-| user_id (FK→users.id) | uuid        | 所有ユーザー |
+| user_id (FK→users.id) | text        | 所有ユーザー |
 | name                  | text        | 店名         |
 | created_at            | timestamptz | 作成日時     |
 | updated_at            | timestamptz | 更新日時     |
@@ -57,7 +65,7 @@
 | カラム                | 型          | 説明             |
 | --------------------- | ----------- | ---------------- |
 | id (PK)               | uuid        | 保存場所ID       |
-| user_id (FK→users.id) | uuid        | 所有ユーザー     |
+| user_id (FK→users.id) | text        | 所有ユーザー     |
 | name                  | text        | 保存場所名       |
 | kind                  | text        | default / custom |
 | created_at            | timestamptz | 作成日時         |
@@ -84,7 +92,7 @@
 | カラム                                        | 型          | 説明                                      |
 | --------------------------------------------- | ----------- | ----------------------------------------- |
 | id (PK)                                       | uuid        | 食材ID                                    |
-| user_id (FK→users.id)                         | uuid        | 所有ユーザー                              |
+| user_id (FK→users.id)                         | text        | 所有ユーザー                              |
 | name                                          | text        | 食材名（空NG）                            |
 | status                                        | text        | 食材状態（未消費 / 消費中 / 消費 / 廃棄） |
 | image                                         | text        | 画像URL or パス（nullable）               |

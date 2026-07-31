@@ -533,7 +533,7 @@ success:boolean
 
 ## 認証の考え方
 
-- 認証は **Google OAuth2 + Auth.js** に委譲する
+- 認証は **Google OAuth2 + better-auth** に委譲する
 - アプリケーション独自の `/api/login` `/api/signup` は作らない
 - 初回ログイン時にユーザーを自動登録する
 
