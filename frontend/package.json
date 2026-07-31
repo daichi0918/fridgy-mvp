@@ -9,6 +9,11 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "check": "npm run check:types && npm run check:lint && npm run check:format && npm run check:deps",
+    "check:types": "tsc --noEmit",
+    "check:lint": "eslint",
+    "check:format": "prettier --check .",
+    "check:deps": "if grep -rqE 'from \"(next|react|drizzle|pg|better-auth)' src/external/domain/; then echo '❌ domain 層が外部に依存している'; grep -rnE 'from \"(next|react|drizzle|pg|better-auth)' src/external/domain/; exit 1; else echo '✅ domain は外部に依存していない'; fi",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/external/client/database/migrate.ts",
     "db:studio": "drizzle-kit studio"
